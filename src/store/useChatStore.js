@@ -33,6 +33,12 @@ export const useChatStore = create((set, get) => ({
             set({ isMessagesLoading: false });
         }
     },
+
+
+
+
+
+
     sendMessage: async (messageData) => {
         const { selectedUser, messages } = get();
         try {
@@ -43,6 +49,7 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
+ 
     subscribeToMessages: () => {
         const { selectedUser } = get();
         if (!selectedUser) return;
@@ -66,3 +73,7 @@ export const useChatStore = create((set, get) => ({
 
     setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));
+
+
+
+
