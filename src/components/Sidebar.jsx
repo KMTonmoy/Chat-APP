@@ -24,22 +24,38 @@ const Sidebar = () => {
     const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
     useEffect(() => {
-        getUsers();
+        getUsers(); // Fetch all users once
     }, [getUsers]);
 
-    // Filter users who have messages with the current user (myID)
+    const [searchQuery, setSearchQuery] = useState(""); // State for the search query
+
+    // Default filter for users who have messages with current user (myID)
     const usersWithMessages = messageData
         .filter(message => message.senderId === myID || message.receiverId === myID)
-        .map(message => {
-            return message.senderId === myID ? message.receiverId : message.senderId;
-        });
+        .map(message => message.senderId === myID ? message.receiverId : message.senderId);
 
-    // Remove duplicates from the usersWithMessages array
     const uniqueUserIdsWithMessages = [...new Set(usersWithMessages)];
 
-    const filteredUsers = showOnlineOnly
-        ? users.filter((user) => onlineUsers.includes(user._id) && uniqueUserIdsWithMessages.includes(user._id))
-        : users.filter((user) => uniqueUserIdsWithMessages.includes(user._id));
+    // Filter users based on search query
+    const filteredUsers = users
+        .filter((user) => {
+            const matchesSearch =
+                user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase());
+
+            // If there's a search query, don't check for messages with myID, just search by name/email
+            if (searchQuery) {
+                return matchesSearch;
+            }
+
+            // If there's no search query, check for messages with myID
+            return uniqueUserIdsWithMessages.includes(user._id) && matchesSearch;
+        })
+        .filter((user) =>
+            showOnlineOnly
+                ? onlineUsers.includes(user._id) // Filter online users if enabled
+                : true
+        );
 
     if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -50,6 +66,18 @@ const Sidebar = () => {
                     <Users className="size-6" />
                     <span className="font-medium hidden lg:block">Contacts</span>
                 </div>
+
+                {/* Search Input */}
+                <div className="mt-4">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name or email"
+                        className="input input-sm w-full"
+                    />
+                </div>
+
                 <div className="mt-3 hidden lg:flex items-center gap-2">
                     <label className="cursor-pointer flex items-center gap-2">
                         <input
