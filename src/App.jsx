@@ -9,6 +9,7 @@ import SignupPage from './pages/SignupPage';
 import { useAuthStore } from './store/useAuthStore';
 import { Loader } from 'lucide-react';
 import { Toaster } from "react-hot-toast";
+import { useThemeStore } from './store/useThemeStore';
 
 const App = () => {
   const { authUser, checkAuth, ischeckingAuth } = useAuthStore();
@@ -27,9 +28,10 @@ const App = () => {
       </div>
     );
   }
+  const { theme } = useThemeStore();
 
   return (
-    <div>
+    <div data-theme={theme}>
       <Navbar />
       <Toaster />
 
